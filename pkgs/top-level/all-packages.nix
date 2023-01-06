@@ -35171,6 +35171,8 @@ with pkgs;
 
   terraria-server = callPackage ../games/terraria-server { };
 
+  the-dark-aid = libsForQt5.callPackage ../games/the-dark-aid { };
+
   tibia = pkgsi686Linux.callPackage ../games/tibia { };
 
   tintin = callPackage ../games/tintin { };
