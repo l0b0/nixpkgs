@@ -108,5 +108,5 @@ def cli(jobset):
 if __name__ == "__main__":
     try:
         cli()
-    except Exception as e:
+    except Exception:
         import pdb;pdb.post_mortem()

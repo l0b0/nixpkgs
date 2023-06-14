@@ -66,7 +66,7 @@ async def run_update_script(nixpkgs_root: str, merge_lock: asyncio.Lock, temp_di
         update_info = await update_process.stdout.read()
 
         await merge_changes(merge_lock, package, update_info, temp_dir)
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         eprint('Cancelling…')
         raise asyncio.exceptions.CancelledError()
     except CalledProcessError as e:
@@ -242,6 +242,6 @@ if __name__ == '__main__':
 
     try:
         main(args.max_workers, args.keep_going, args.commit, args.packages)
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         # Let’s cancel outside of the main loop too.
         sys.exit(130)
