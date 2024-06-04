@@ -6,6 +6,7 @@
 }:
 let
   cfg = config.programs.ydotool;
+  runtimeDirectory = "ydotoold";
 in
 {
   meta = {
@@ -28,9 +29,9 @@ in
       partOf = [ "multi-user.target" ];
       serviceConfig = {
         Group = "ydotool";
-        RuntimeDirectory = "ydotoold";
+        RuntimeDirectory = runtimeDirectory;
         RuntimeDirectoryMode = "0750";
-        ExecStart = "${lib.getExe' pkgs.ydotool "ydotoold"} --socket-path=/run/ydotoold/socket --socket-perm=0660";
+        ExecStart = "${lib.getExe' pkgs.ydotool "ydotoold"} --socket-path=${config.environment.variables.YDOTOOL_SOCKET} --socket-perm=0660";
 
         # hardening
 
@@ -76,7 +77,7 @@ in
     };
 
     environment.variables = {
-      YDOTOOL_SOCKET = "/run/ydotoold/socket";
+      YDOTOOL_SOCKET = "/run/${runtimeDirectory}/socket";
     };
     environment.systemPackages = with pkgs; [ ydotool ];
   };
