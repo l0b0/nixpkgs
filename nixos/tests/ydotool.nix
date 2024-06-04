@@ -128,4 +128,45 @@ in
       quantenzitrone
     ];
   };
+
+  customGroup =
+    let
+      insideGroupUsername = "ydotool-user";
+      outsideGroupUsername = "other-user";
+      groupName = "custom-group";
+    in
+    makeTest {
+      name = "ydotool-custom-group";
+
+      nodes."machine" = {
+        programs.ydotool = {
+          enable = true;
+          group = groupName;
+        };
+
+        users.users = {
+          "${insideGroupUsername}" = {
+            isNormalUser = true;
+            extraGroups = [ groupName ];
+          };
+          "${outsideGroupUsername}".isNormalUser = true;
+        };
+      };
+
+      testScript = ''
+        start_all()
+
+        # Wait for service to start
+        machine.wait_for_unit("multi-user.target")
+        machine.wait_for_unit("ydotoold.service")
+
+        # Verify that user with the configured group can use the service
+        machine.succeed("sudo --login --user=${insideGroupUsername} ydotool type 'Hello, World!'")
+
+        # Verify that user without the configured group can't use the service
+        machine.fail("sudo --login --user=${outsideGroupUsername} ydotool type 'Hello, World!'")
+      '';
+
+      meta.maintainers = with lib.maintainers; [ l0b0 ];
+    };
 }
