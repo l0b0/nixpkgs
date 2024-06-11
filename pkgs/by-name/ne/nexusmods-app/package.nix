@@ -87,24 +87,21 @@ buildDotnetModule rec {
   ];
 
   passthru = {
-    tests = {
-      serve = runCommand "${pname}-test-serve" { } ''
-        ${nexusmods-app}/bin/${nexusmods-app.meta.mainProgram}
-        touch $out
-      '';
-      help = runCommand "${pname}-test-help" { } ''
-        ${nexusmods-app}/bin/${nexusmods-app.meta.mainProgram} --help
-        touch $out
-      '';
-      associate-nxm = runCommand "${pname}-test-associate-nxm" { } ''
-        ${nexusmods-app}/bin/${nexusmods-app.meta.mainProgram} associate-nxm
-        touch $out
-      '';
-      list-tools = runCommand "${pname}-test-list-tools" { } ''
-        ${nexusmods-app}/bin/${nexusmods-app.meta.mainProgram} list-tools
-        touch $out
-      '';
-    };
+    tests =
+      lib.attrsets.mapAttrs
+        (
+          tname: args:
+          runCommand "${pname}-test-${tname}" { } ''
+            ${lib.getExe nexusmods-app} ${args}
+            touch $out
+          ''
+        )
+        {
+          serve = "";
+          help = "--help";
+          associate-nxm = "associate-nxm";
+          list-tools = "list-tools";
+        };
     updateScript = ./update.bash;
   };
 
